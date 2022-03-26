@@ -1,11 +1,18 @@
-from flask import Flask
+from flask import Flask, request as rq, jsonify
 
 app = Flask(__name__)
 
 
 @app.route('/')
-def hello_world():  # put application's code here
-    return 'Hello World!'
+def index():
+    return '<h1>Working</h1>'
+
+
+@app.route('/new', methods=['POST'])
+def newSession():
+    a = rq.json
+    print(a['name'], a['script'])
+    return jsonify({'sid': -1})
 
 
 if __name__ == '__main__':
