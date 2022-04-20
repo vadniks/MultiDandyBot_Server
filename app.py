@@ -12,13 +12,19 @@ def index():
 @app.route('/new', methods=['POST'])
 def newPlayer() -> Response:
     a = rq.json
-    print(a['name'], a['script'])
-    return jsonify({'sid': -1})
+
+    p = sk.registerNewPlayer(a['name'], a['script'])
+    s: sk.Session = p.session
+
+    print(type(s))
+
+    return jsonify({'sid': s.sid, 'pid': p.id})
 
 
-@app.route('/chk/<sid>', methods=['GET'])
-def checkForPlayers(sid: int) -> bool:
-    return sk.waitForGameStart(sid)
+@app.route('/chk/<pid>', methods=['GET'])
+def checkForPlayers(pid: int) -> Response:
+    scripts = sk.getScripts(pid)
+    return jsonify(scripts)
 
 
 if __name__ == '__main__':
