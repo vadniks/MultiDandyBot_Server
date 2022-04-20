@@ -21,7 +21,7 @@ def newPlayer() -> Response:
 
 @app.route('/chk/<pid>', methods=['GET'])
 def checkForPlayers(pid: int) -> Response:
-    scripts = sk.getScripts(pid)
+    scripts = sk.getScripts(int(pid))
     return jsonify(scripts)
 
 
