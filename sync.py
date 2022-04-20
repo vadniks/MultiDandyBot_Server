@@ -25,6 +25,7 @@ class Session:
     def __init__(S, sid: int):
         S.sid = sid
         S.created = round(time.time() * 1000)
+        S.players = []
 
     def playersLen(S) -> int: return len(S.players)
 
@@ -88,3 +89,12 @@ def getScripts(pidToExclude: int) -> List[str]:
         if i.id != pidToExclude:
             _list.append(i.script)
     return _list
+
+
+def removePlayer(pid: int) -> bool:
+    global _players
+    for j, i in enumerate(_players):
+        if i.id == pid:
+            del _players[j]
+            return True
+    return False

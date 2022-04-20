@@ -16,8 +16,6 @@ def newPlayer() -> Response:
     p = sk.registerNewPlayer(a['name'], a['script'])
     s: sk.Session = p.session
 
-    print(type(s))
-
     return jsonify({'sid': s.sid, 'pid': p.id})
 
 
@@ -25,6 +23,11 @@ def newPlayer() -> Response:
 def checkForPlayers(pid: int) -> Response:
     scripts = sk.getScripts(pid)
     return jsonify(scripts)
+
+
+@app.route('/qt/<pid>', methods=['POST'])
+def playerQuit(pid: int):
+    return Response(status=200 if sk.removePlayer(int(pid)) else 404)
 
 
 if __name__ == '__main__':
