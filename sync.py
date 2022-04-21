@@ -13,6 +13,7 @@ class Player:
     session: Any # Session
     level: int
     coords: Tuple[int, int] # x y
+    goldAmount: int
 
     def __init__(
         S,
@@ -26,6 +27,7 @@ class Player:
         S.session = None
         S.created = round(time.time() * 1000)
         S.level = level
+        S.goldAmount = 0
 
 
 class Session:
@@ -71,10 +73,6 @@ def _getFreeSession() -> Session:
     return _registerNewSession()
 
 
-def _getSession(sid: int) -> Session:
-    pass
-
-
 #                                         sid  pid
 def registerNewPlayer(p: Player) -> Tuple[int, int]:
     global _players
@@ -117,8 +115,8 @@ def removePlayer(pid: int) -> bool:
     return False
 
 
-#                                           id   lvl   x    y
-def trace(sid: int, pid: int) -> List[Tuple[int, int, int, int]] | None:
+#                                           id   lvl   x    y   gold
+def trace(sid: int, pid: int) -> List[Tuple[int, int, int, int, int]] | None:
     global _players, _sessions
 
     session = None
@@ -130,11 +128,13 @@ def trace(sid: int, pid: int) -> List[Tuple[int, int, int, int]] | None:
     _list = []
     for i in session.players:
         if i.id != pid:
-            _list.append((i.id, i.level, i.coords[0], i.coords[1]))
+            _list.append((i.id, i.level, i.coords[0], i.coords[1], i.goldAmount))
 
     return _list
 
 
-def updatePlayer(pid: int, level: int):
+def updatePlayer(pid: int, level: int, x: int, y: int, gold: int):
     p = getPlayer(pid)
     p.level = level
+    p.coords = (x, y)
+    p.goldAmount = gold

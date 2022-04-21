@@ -30,15 +30,18 @@ def playerQuit(pid: str) -> Response:
     return Response(status=200 if sk.removePlayer(int(pid)) else 404)
 
 
-@app.route('/trc/<pid>/<sid>')
+@app.route('/trc/<pid>/<sid>', methods=['GET'])
 def trace(pid: str, sid: str) -> Response:
     positions = sk.trace(int(pid), int(sid))
     return jsonify(positions) if positions is not None else Response(status=404)
 
-@app.route('/upd/<pid>/<lvl>')
-def updateLvl(pid: str, lvl: str) -> Response:
-    sk.updatePlayer(int(pid), int(lvl))
+
+@app.route('/upd/<pid>', methods=['POST'])
+def updateLvl(pid: str) -> Response:
+    a = rq.json
+    sk.updatePlayer(int(pid), int(a['level']), int(a['x']), int(a['y']), int(a['gold']))
     return Response(status=200)
+
 
 if __name__ == '__main__':
     app.run()
