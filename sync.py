@@ -1,4 +1,4 @@
-from typing import List, Any
+from typing import List, Any, Tuple
 import time
 
 
@@ -82,12 +82,12 @@ def getPlayer(pid: int) -> Player | None:
     return None
 
 
-def getScripts(pidToExclude: int) -> List[str]:
+def getScripts(pidToExclude: int) -> List[Tuple[int, str, str]]:
     global _players
     _list = []
     for i in _players:
         if i.id != pidToExclude:
-            _list.append(i.script)
+            _list.append((i.id, i.name, i.script))
     return _list
 
 
