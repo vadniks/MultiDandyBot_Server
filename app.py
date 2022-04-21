@@ -13,22 +13,31 @@ def index():
 def newPlayer() -> Response:
     a = rq.json
 
-    p = sk.registerNewPlayer(a['name'], a['script'])
-    s: sk.Session = p.session
+    p = sk.Player(a['name'], a['script'], int(a['level']))
+    sid, pid = sk.registerNewPlayer(p)
 
-    return jsonify({'sid': s.sid, 'pid': p.id})
+    return jsonify({'sid': sid, 'pid': pid})
 
 
 @app.route('/chk/<pid>', methods=['GET'])
-def checkForPlayers(pid: int) -> Response:
-    scripts = sk.getScripts(int(pid))
-    return jsonify(scripts)
+def checkForPlayers(pid: str) -> Response:
+    players = sk.getPlayers(int(pid))
+    return jsonify(players)
 
 
 @app.route('/qt/<pid>', methods=['POST'])
-def playerQuit(pid: int):
+def playerQuit(pid: str) -> Response:
     return Response(status=200 if sk.removePlayer(int(pid)) else 404)
 
+
+@app.route('/trc/<pid>/<sid>')
+def trace(pid: str, sid: str) -> Response:
+    positions = sk.trace(int(pid), int(sid))
+    return jsonify(positions) if positions is not None else Response(status=404)
+
+@app.route('')
+def updateLvl():
+    pass
 
 if __name__ == '__main__':
     app.run()

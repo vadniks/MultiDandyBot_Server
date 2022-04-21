@@ -1,5 +1,8 @@
 from typing import List, Any, Tuple
 import time
+from data import *
+
+NUM_UNDEF = -1
 
 
 class Player:
@@ -8,22 +11,30 @@ class Player:
     script: str
     created: int
     session: Any # Session
+    level: int
+    coords: Tuple[int, int] # x y
 
-    def __init__(S, _id: int, name: str, script: str, session: Any):
-        S.id = _id
+    def __init__(
+        S,
+        name: str,
+        script: str,
+        level: int
+    ):
+        S.id = NUM_UNDEF
         S.name = name
         S.script = script
-        S.session = session
+        S.session = None
         S.created = round(time.time() * 1000)
+        S.level = level
 
 
 class Session:
-    sid: int
+    id: int
     players: List[Player]
     created: int
 
     def __init__(S, sid: int):
-        S.sid = sid
+        S.id = sid
         S.created = round(time.time() * 1000)
         S.players = []
 
@@ -64,14 +75,20 @@ def _getSession(sid: int) -> Session:
     pass
 
 
-def registerNewPlayer(name: str, script: str) -> Player:
+#                                         sid  pid
+def registerNewPlayer(p: Player) -> Tuple[int, int]:
     global _players
     s = _getFreeSession()
 
-    p = Player(_playersAmount(), name, script, s)
+    p.id = _playersAmount()
+    p.session = s
+
+    lvl = LEVELS[p.level]
+    p.coords = (lvl[XX], lvl[YY])
+
     _players.append(p)
 
-    return p
+    return s.id, p.id
 
 
 def getPlayer(pid: int) -> Player | None:
@@ -82,12 +99,12 @@ def getPlayer(pid: int) -> Player | None:
     return None
 
 
-def getScripts(pidToExclude: int) -> List[Tuple[int, str, str]]:
+def getPlayers(pidToExclude: int) -> List[Tuple[int, str]]:
     global _players
     _list = []
     for i in _players:
         if i.id != pidToExclude:
-            _list.append((i.id, i.name, i.script))
+            _list.append((i.id, i.name))
     return _list
 
 
@@ -98,3 +115,21 @@ def removePlayer(pid: int) -> bool:
             del _players[j]
             return True
     return False
+
+
+#                                           id   lvl   x    y
+def trace(sid: int, pid: int) -> List[Tuple[int, int, int, int]] | None:
+    global _players, _sessions
+
+    session = None
+    for i in _sessions:
+        if i.id == sid:
+            session = i
+    if session is None: return None
+
+    _list = []
+    for i in session.players:
+        if i.id != pid:
+            _list.append((i.id, i.level, i.coords[0], i.coords[1]))
+
+    return _list
