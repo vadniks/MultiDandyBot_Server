@@ -133,3 +133,8 @@ def trace(sid: int, pid: int) -> List[Tuple[int, int, int, int]] | None:
             _list.append((i.id, i.level, i.coords[0], i.coords[1]))
 
     return _list
+
+
+def updatePlayer(pid: int, level: int):
+    p = getPlayer(pid)
+    p.level = level

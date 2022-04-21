@@ -35,9 +35,10 @@ def trace(pid: str, sid: str) -> Response:
     positions = sk.trace(int(pid), int(sid))
     return jsonify(positions) if positions is not None else Response(status=404)
 
-@app.route('')
-def updateLvl():
-    pass
+@app.route('/upd/<pid>/<lvl>')
+def updateLvl(pid: str, lvl: str) -> Response:
+    sk.updatePlayer(int(pid), int(lvl))
+    return Response(status=200)
 
 if __name__ == '__main__':
     app.run()
