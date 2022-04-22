@@ -131,7 +131,6 @@ def trace(sid: int, pid: int) -> List[Tuple[int, int, int, int, int]] | None:
         if i.id != pid:
             _list.append((i.id, i.level, i.coords[0], i.coords[1], i.goldAmount))
 
-    print(pid, _list)
     return _list
 
 
