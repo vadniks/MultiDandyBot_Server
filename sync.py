@@ -60,7 +60,7 @@ def _playersAmount() -> int:
 
 def _registerNewSession() -> Session:
     global _sessions
-    a = Session(_sessionsAmount() + 1)
+    a = Session(_sessionsAmount())
     _sessions.append(a)
     return a
 
@@ -85,6 +85,7 @@ def registerNewPlayer(p: Player) -> Tuple[int, int]:
     p.coords = (lvl[XX], lvl[YY])
 
     _players.append(p)
+    s.players.append(p)
 
     return s.id, p.id
 
@@ -130,6 +131,7 @@ def trace(sid: int, pid: int) -> List[Tuple[int, int, int, int, int]] | None:
         if i.id != pid:
             _list.append((i.id, i.level, i.coords[0], i.coords[1], i.goldAmount))
 
+    print(pid, _list)
     return _list
 
 

@@ -30,9 +30,9 @@ def playerQuit(pid: str) -> Response:
     return Response(status=200 if sk.removePlayer(int(pid)) else 404)
 
 
-@app.route('/trc/<pid>/<sid>', methods=['GET'])
-def trace(pid: str, sid: str) -> Response:
-    positions = sk.trace(int(pid), int(sid))
+@app.route('/trc/<sid>/<pid>', methods=['GET'])
+def trace(sid: str, pid: str) -> Response:
+    positions = sk.trace(int(sid), int(pid))
     return jsonify(positions) if positions is not None else Response(status=404)
 
 
