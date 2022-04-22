@@ -1,3 +1,5 @@
+from typing import List, Tuple
+
 from flask import Flask, request as rq, jsonify, Response
 import sync as sk
 
@@ -42,6 +44,10 @@ def updateLvl(pid: str) -> Response:
     sk.updatePlayer(int(pid), int(a['level']), int(a['x']), int(a['y']), int(a['gold']))
     return Response(status=200)
 
+
+@app.route('', methods=['POST']) #        level goldAmount
+def updateBoards(sid: str, gib: List[Tuple[int, int]]) -> Response: # gib goldInBoards
+    pass #TODO
 
 if __name__ == '__main__':
     app.run()
