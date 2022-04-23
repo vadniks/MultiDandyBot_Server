@@ -1,7 +1,6 @@
 from typing import List, Any, Tuple
 import time
 from data import *
-import sys
 
 NUM_UNDEF = -1
 
@@ -195,3 +194,10 @@ def traceBoard(sid: int, pid: int, level: int) -> List[Tuple[int, int, int]]:
 
 def getGoldAmount(sid: int, level: int) -> int:
     return LEVELS[level][GG] - len(_getSession(sid).boards[level].goldTakens)
+
+
+def checkName(name: str) -> bool:
+    for i in _players:
+        if i.name == name:
+            return True
+    return False

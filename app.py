@@ -17,6 +17,9 @@ def newPlayer() -> Response:
     a = rq.json
 
     p = sk.Player(a['name'], a['script'], int(a['level']))
+    if sk.checkName(p.name):
+        return jsonify({'sid': -1})
+
     sid, pid = sk.registerNewPlayer(p)
 
     return jsonify({'sid': sid, 'pid': pid})
