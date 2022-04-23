@@ -1,6 +1,9 @@
 from flask import Flask, request as rq, jsonify, Response
 import sync as sk
+import logging
 
+log = logging.getLogger('werkzeug')
+log.setLevel(logging.WARN)
 app = Flask(__name__)
 
 
@@ -50,9 +53,9 @@ def updateBoard(sid: str, lvl: str) -> Response:
     return Response(status=200)
 
 
-@app.route('/trc_b/<sid>/<lvl>', methods=['GET'])
-def traceBoard(sid: str, lvl: str) -> Response:
-    takens = sk.traceBoard(int(sid), int(lvl))
+@app.route('/trc_b/<sid>/<pid>/<lvl>', methods=['GET'])
+def traceBoard(sid: str, pid: str, lvl: str) -> Response:
+    takens = sk.traceBoard(int(sid), int(pid), int(lvl))
     return jsonify(takens) if takens is not None else Response(status=500)
 
 

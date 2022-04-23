@@ -55,7 +55,7 @@ class Session:
         S.id = sid
         S.created = round(time.time() * 1000)
         S.players = []
-        S.boards = [Board(sid, S, i) for i in LEVELS_AMOUNT]
+        S.boards = [Board(sid, S, i) for i in range(LEVELS_AMOUNT)]
 
     def playersLen(S) -> int: return len(S.players)
 
@@ -124,11 +124,21 @@ def getPlayers(pidToExclude: int) -> List[Tuple[int, str]]:
     return _list
 
 
+def delSessionIfNeeded(sid: int) -> bool:
+    global _sessions
+    for j, i in enumerate(_sessions):
+        if i.id == sid and len(i.players) == 0:
+            _sessions.pop(j)
+            return True
+    return False
+
+
 def removePlayer(pid: int) -> bool:
     global _players
     for j, i in enumerate(_players):
         if i.id == pid:
-            del _players[j]
+            _players.pop(j)
+            delSessionIfNeeded(i.session.id)
             return True
     return False
 
@@ -171,11 +181,12 @@ def updateBoard(sid: int, level: int, goldTakenFrom: Tuple[int, int, int]):
     bs[level].goldTakens.append(goldTakenFrom)
 
 
-#                                                  pid   x    y
-def traceBoard(sid: int, level: int) -> List[Tuple[int, int, int]]:
+#                                                            pid   x    y
+def traceBoard(sid: int, pid: int, level: int) -> List[Tuple[int, int, int]]:
     s = _getSession(sid)
     assert s is not None
     _list = []
     for i in s.boards[level].goldTakens:
-        _list.append(i)
+        if i[0] != pid:
+            _list.append(i)
     return _list
