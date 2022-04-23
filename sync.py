@@ -1,6 +1,7 @@
 from typing import List, Any, Tuple
 import time
 from data import *
+import sys
 
 NUM_UNDEF = -1
 
@@ -98,7 +99,7 @@ def registerNewPlayer(p: Player) -> Tuple[int, int]:
     p.id = _playersAmount()
     p.session = s
 
-    lvl = LEVELS_START_COORDS[p.level]
+    lvl = LEVELS[p.level]
     p.coords = (lvl[XX], lvl[YY])
 
     _players.append(p)
@@ -190,3 +191,7 @@ def traceBoard(sid: int, pid: int, level: int) -> List[Tuple[int, int, int]]:
         if i[0] != pid:
             _list.append(i)
     return _list
+
+
+def getGoldAmount(sid: int, level: int) -> int:
+    return LEVELS[level][GG] - len(_getSession(sid).boards[level].goldTakens)

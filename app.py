@@ -9,7 +9,7 @@ app = Flask(__name__)
 
 @app.route('/')
 def index():
-    return '<h1>Working</h1>'
+    return "<h1>There's no easter eggs, go away.</h1>"
 
 
 @app.route('/new', methods=['POST'])
@@ -57,6 +57,12 @@ def updateBoard(sid: str, lvl: str) -> Response:
 def traceBoard(sid: str, pid: str, lvl: str) -> Response:
     takens = sk.traceBoard(int(sid), int(pid), int(lvl))
     return jsonify(takens) if takens is not None else Response(status=500)
+
+
+@app.route('/gld/<sid>/<lvl>', methods=['GET'])
+def getGoldAmount(sid: str, lvl: str) -> Response:
+    a = sk.getGoldAmount(int(sid), int(lvl))
+    return str(a) if a >= 0 else Response(status=500)
 
 
 if __name__ == '__main__':
