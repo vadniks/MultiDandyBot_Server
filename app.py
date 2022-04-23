@@ -1,5 +1,3 @@
-from typing import List, Tuple
-
 from flask import Flask, request as rq, jsonify, Response
 import sync as sk
 
@@ -45,9 +43,18 @@ def updateLvl(pid: str) -> Response:
     return Response(status=200)
 
 
-@app.route('', methods=['POST']) #        level goldAmount
-def updateBoards(sid: str, gib: List[Tuple[int, int]]) -> Response: # gib goldInBoards
-    pass #TODO
+@app.route('/brd/<sid>/<lvl>', methods=['POST'])
+def updateBoard(sid: str, lvl: str) -> Response:
+    a = rq.json
+    sk.updateBoard(int(sid), int(lvl), (int(a['pid']), int(a['gtf_x']), int(a['gtf_y'])))
+    return Response(status=200)
+
+
+@app.route('/trc_b/<sid>/<lvl>', methods=['GET'])
+def traceBoard(sid: str, lvl: str) -> Response:
+    takens = sk.traceBoard(int(sid), int(lvl))
+    return jsonify(takens) if takens is not None else Response(status=500)
+
 
 if __name__ == '__main__':
     app.run()

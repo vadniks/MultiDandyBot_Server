@@ -30,15 +30,32 @@ class Player:
         S.goldAmount = 0
 
 
+class Board:
+    id: int
+    session: Any # Session
+    level: int          #  pid   x    y
+    goldTakens: List[Tuple[int, int, int]]
+    created: int
+
+    def __init__(S, _id: int, session: Any, level: int):
+        S.id = _id
+        S.session = session
+        S.level = level
+        S.goldTakens = []
+        S.created = round(time.time() * 1000)
+
+
 class Session:
     id: int
     players: List[Player]
     created: int
+    boards: List[Board]
 
     def __init__(S, sid: int):
         S.id = sid
         S.created = round(time.time() * 1000)
         S.players = []
+        S.boards = [Board(sid, S, i) for i in LEVELS_AMOUNT]
 
     def playersLen(S) -> int: return len(S.players)
 
@@ -81,7 +98,7 @@ def registerNewPlayer(p: Player) -> Tuple[int, int]:
     p.id = _playersAmount()
     p.session = s
 
-    lvl = LEVELS[p.level]
+    lvl = LEVELS_START_COORDS[p.level]
     p.coords = (lvl[XX], lvl[YY])
 
     _players.append(p)
@@ -116,14 +133,18 @@ def removePlayer(pid: int) -> bool:
     return False
 
 
+def _getSession(sid: int) -> Session | None:
+    for i in _sessions:
+        if i.id == sid:
+            return i
+    return None
+
+
 #                                           id   lvl   x    y   gold
 def trace(sid: int, pid: int) -> List[Tuple[int, int, int, int, int]] | None:
     global _players, _sessions
 
-    session = None
-    for i in _sessions:
-        if i.id == sid:
-            session = i
+    session = _getSession(sid)
     if session is None: return None
 
     _list = []
@@ -136,6 +157,25 @@ def trace(sid: int, pid: int) -> List[Tuple[int, int, int, int, int]] | None:
 
 def updatePlayer(pid: int, level: int, x: int, y: int, gold: int):
     p = getPlayer(pid)
+    assert p is not None
     p.level = level
     p.coords = (x, y)
     p.goldAmount = gold
+
+
+#                                                          pid   x    y
+def updateBoard(sid: int, level: int, goldTakenFrom: Tuple[int, int, int]):
+    s = _getSession(sid)
+    assert s is not None
+    bs = s.boards
+    bs[level].goldTakens.append(goldTakenFrom)
+
+
+#                                                  pid   x    y
+def traceBoard(sid: int, level: int) -> List[Tuple[int, int, int]]:
+    s = _getSession(sid)
+    assert s is not None
+    _list = []
+    for i in s.boards[level].goldTakens:
+        _list.append(i)
+    return _list
