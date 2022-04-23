@@ -150,8 +150,8 @@ def _getSession(sid: int) -> Session | None:
     return None
 
 
-#                                           id   lvl   x    y   gold
-def trace(sid: int, pid: int) -> List[Tuple[int, int, int, int, int]] | None:
+#                                           id   name lvl   x    y   gold
+def trace(sid: int, pid: int) -> List[Tuple[int, str, int, int, int, int]] | None:
     global _players, _sessions
 
     session = _getSession(sid)
@@ -160,7 +160,7 @@ def trace(sid: int, pid: int) -> List[Tuple[int, int, int, int, int]] | None:
     _list = []
     for i in session.players:
         if i.id != pid:
-            _list.append((i.id, i.level, i.coords[0], i.coords[1], i.goldAmount))
+            _list.append((i.id, i.name, i.level, i.coords[0], i.coords[1], i.goldAmount))
 
     return _list
 
