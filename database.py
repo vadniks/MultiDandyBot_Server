@@ -75,7 +75,6 @@ def insert(player: Player): _wrapper2(player, _insert)
 def select() -> List[Row]: return _wrapper2(None, _select)
 
 
-sys.stderr.write('module ' + str(get_ident()) + '\n')
 _executor = TaskExecutor()
 _executor.daemon = True
 _executor.start()
