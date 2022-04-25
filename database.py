@@ -14,9 +14,6 @@ _DB_SCORE = 'score'
 _DB_SCRIPT = 'script'
 _DB_DATE = 'date'
 
-_connection = sq.connect(_DB_FILE)
-ax.register(lambda: _connection.close()) #TODO: make client's quit request sending in this way
-
 
 def _wrapper(wrapped: Callable, doPost: Callable = None) -> Any:
     cursor = _connection.cursor()
@@ -28,7 +25,7 @@ def _wrapper(wrapped: Callable, doPost: Callable = None) -> Any:
 
 
 # noinspection SqlNoDataSourceInspection
-def createTable(): _wrapper(lambda cursor:
+def initializeTable(): _wrapper(lambda cursor:
     cursor.execute(f'''create table if not exists {_DB_NAME} (
         {_DB_ID} integer primary key, /*implicit autoincrement, pass null when inserting*/
         {_DB_PLAYER} text,
@@ -52,3 +49,8 @@ def insert(player: Player): _wrapper(lambda cursor:
 # noinspection SqlNoDataSourceInspection
 def select() -> Any: return _wrapper(lambda cursor:
     cursor.execute(f'''select * from {_DB_NAME} order by {_DB_SCORE} desc'''))
+
+
+_connection = sq.connect(_DB_FILE)
+ax.register(lambda: _connection.close()) #TODO: make client's quit request sending in this way
+initializeTable()

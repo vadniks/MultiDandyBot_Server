@@ -5,6 +5,7 @@ from data import *
 NUM_UNDEF = -1
 
 
+# TODO: add time period between start and finish of the player's game
 # TODO: from dataclasses import dataclass \n @dataclass
 class Player:
     id: int

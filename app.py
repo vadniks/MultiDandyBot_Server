@@ -1,6 +1,7 @@
 from flask import Flask, request as rq, jsonify, Response
 import sync as sk
 import logging
+import database as db
 
 log = logging.getLogger('werkzeug')
 log.setLevel(logging.WARN)
@@ -66,6 +67,20 @@ def traceBoard(sid: str, pid: str, lvl: str) -> Response:
 def getGoldAmount(sid: str, lvl: str) -> Response:
     a = sk.getGoldAmount(int(sid), int(lvl))
     return str(a) if a >= 0 else Response(status=500)
+
+
+@app.route('/db', methods=['GET', 'POST'])
+def db() -> Response:
+    jsn = rq.json
+
+    def onInsert():
+        db.insert(sk.getPlayer(int(jsn['pid'])))
+        return Response(status=200)
+
+    return {
+        'select': lambda: jsonify(db.select()),
+        'insert': onInsert
+    }[jsn['mode']]()
 
 
 if __name__ == '__main__':
