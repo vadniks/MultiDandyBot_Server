@@ -5,6 +5,7 @@ from data import *
 NUM_UNDEF = -1
 
 
+# TODO: from dataclasses import dataclass \n @dataclass
 class Player:
     id: int
     name: str
