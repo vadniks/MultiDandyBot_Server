@@ -3,6 +3,7 @@ import time
 from data import *
 
 NUM_UNDEF = -1
+THRESHOLD = 0.1 # seconds
 
 
 # TODO: add time period between start and finish of the player's game

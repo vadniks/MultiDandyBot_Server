@@ -2,7 +2,7 @@ from threading import Thread
 from queue import SimpleQueue
 from typing import Callable, Optional, Tuple, List, Any
 from overrides import overrides
-from sync import NUM_UNDEF
+from sync import NUM_UNDEF, THRESHOLD
 from time import time, sleep
 
 
@@ -43,7 +43,7 @@ class TaskExecutor(Thread): #  id    task  argument
 
                 if (index := S._getTask(_id)) >= 0:
                     S._tasks[index] = (_id, True, task(arg))
-            sleep(0.1)
+            sleep(THRESHOLD)
 
     def checkTask(S, _id: int) -> Any:
         if not (task := S._tasks[S._getTask(_id)])[1]:

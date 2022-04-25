@@ -4,7 +4,7 @@ from sqlite3 import Row
 from time import sleep
 from typing import Callable, Any, List
 from executor import TaskExecutor
-from sync import Player
+from sync import Player, THRESHOLD
 import atexit as ax
 
 _DIR_PATH = Path().resolve().absolute().__str__()
@@ -40,6 +40,7 @@ def _initializeTable(): _wrapper(lambda cursor:
     )'''))
 
 
+# TODO: test & debug
 # noinspection SqlNoDataSourceInspection
 def _insert(player: Player): _wrapper(lambda cursor:
     cursor.executemany(f'''insert into {_DB_NAME} values (?, ?, ?, ?, ?)''',
@@ -47,7 +48,7 @@ def _insert(player: Player): _wrapper(lambda cursor:
 
 
 # noinspection SqlNoDataSourceInspection
-def _select() -> Any: return _wrapper(lambda cursor:
+def _select() -> List[Row]: return _wrapper(lambda cursor:
     cursor.execute(f'''select * from {_DB_NAME} order by {_DB_SCORE} desc''').fetchall())
 
 
@@ -65,7 +66,7 @@ def _init():
 
 def _wrapper2(arg: Any | None, fun: Callable):
     _id = _executor.doPost(True, lambda a: fun(a) if a is not None else fun(), arg)
-    while (result := _executor.checkTask(_id)) is None: sleep(0.1)
+    while (result := _executor.checkTask(_id)) is None: sleep(THRESHOLD)
     return result
 
 
