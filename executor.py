@@ -3,7 +3,7 @@ from queue import SimpleQueue
 from typing import Callable, Optional, Tuple, List, Any
 from overrides import overrides
 from sync import NUM_UNDEF
-from time import sleep
+from time import time, sleep
 
 
 class TaskExecutor(Thread): #  id    task  argument
@@ -23,7 +23,7 @@ class TaskExecutor(Thread): #  id    task  argument
         arg: Any | None
     ) -> int:
         if gonnaWaitForResult:
-            _id: int = round(time.time() * 1000)
+            _id: int = round(time() * 1000)
             S._tasks.append((_id, False, None))
         else: _id = NUM_UNDEF
 
