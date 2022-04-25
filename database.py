@@ -1,6 +1,7 @@
 import sqlite3 as sq
 import threading
 from pathlib import Path
+from time import sleep
 from typing import Callable, Any
 from executor import TaskExecutor
 from sync import Player
@@ -43,18 +44,13 @@ def _initializeTable(): _wrapper(lambda cursor:
 
 # noinspection SqlNoDataSourceInspection
 def _insert(player: Player): _wrapper(lambda cursor:
-    cursor.execute(f'''insert into {_DB_NAME} values (
-        null,
-        {player.name},
-        {player.goldAmount},
-        {player.script},
-        {player.created}
-    )'''))
+    cursor.executemany(f'''insert into {_DB_NAME} values (?, ?, ?, ?, ?)''',
+        None, player.name, player.goldAmount, player.script, player.created))
 
 
 # noinspection SqlNoDataSourceInspection
 def _select() -> Any: return _wrapper(lambda cursor:
-    cursor.execute(f'''select * from {_DB_NAME} order by {_DB_SCORE} desc'''))
+    cursor.execute(f'''select * from {_DB_NAME} order by {_DB_SCORE} desc''').fetchall())
 
 
 def _init():
@@ -74,7 +70,7 @@ def _init():
 def _wrapper2(arg: Any | None, fun: Callable):
     sys.stderr.write('wrapper2 ' + str(get_ident()) + '\n')
     _id = _executor.doPost(True, lambda a: fun(a) if a is not None else fun(), arg)
-    while (result := _executor.checkTask(_id)) is None: pass #sys.stderr.write(str(type(result)) + '\n')
+    while (result := _executor.checkTask(_id)) is None: sleep(0.1) #sys.stderr.write(str(type(result)) + '\n')
     return result
 
 
