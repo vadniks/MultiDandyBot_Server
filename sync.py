@@ -82,6 +82,8 @@ def _registerNewSession() -> Session:
     return a
 
 
+# TODO: give new player new session if he connects after players
+# TODO: in the last free session began their game
 def _getFreeSession() -> Session:
     global _sessions
     for i in sorted(_sessions, key=lambda j: j.created):
