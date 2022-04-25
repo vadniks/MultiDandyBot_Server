@@ -13,7 +13,7 @@ class Player:
     session: Any # Session
     level: int
     coords: Tuple[int, int] # x y
-    goldAmount: int
+    goldAmount: int #TODO: rename to score
 
     def __init__(
         S,
