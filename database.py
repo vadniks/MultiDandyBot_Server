@@ -1,13 +1,11 @@
 import sqlite3 as sq
-import threading
 from pathlib import Path
+from sqlite3 import Row
 from time import sleep
-from typing import Callable, Any
+from typing import Callable, Any, List
 from executor import TaskExecutor
 from sync import Player
 import atexit as ax
-import sys
-from threading import get_ident
 
 _DIR_PATH = Path().resolve().absolute().__str__()
 _DB_NAME = 'players' # and table name too
@@ -56,8 +54,6 @@ def _select() -> Any: return _wrapper(lambda cursor:
 def _init():
     global _connection, _executor
 
-    sys.stderr.write('init ' + str(get_ident()) + '\n')
-
     def atExit():
         _connection.close()
         _executor.join()
@@ -68,18 +64,15 @@ def _init():
 
 
 def _wrapper2(arg: Any | None, fun: Callable):
-    sys.stderr.write('wrapper2 ' + str(get_ident()) + '\n')
     _id = _executor.doPost(True, lambda a: fun(a) if a is not None else fun(), arg)
-    while (result := _executor.checkTask(_id)) is None: sleep(0.1) #sys.stderr.write(str(type(result)) + '\n')
+    while (result := _executor.checkTask(_id)) is None: sleep(0.1)
     return result
 
 
 def insert(player: Player): _wrapper2(player, _insert)
 
 
-def select():
-    sys.stderr.write('select ' + str(get_ident()) + '\n')
-    return _wrapper2(None, _select)
+def select() -> List[Row]: return _wrapper2(None, _select)
 
 
 sys.stderr.write('module ' + str(get_ident()) + '\n')
