@@ -50,5 +50,5 @@ def insert(player: Player): _wrapper(lambda cursor:
 
 
 # noinspection SqlNoDataSourceInspection
-def select(): _wrapper(lambda cursor:
+def select() -> Any: return _wrapper(lambda cursor:
     cursor.execute(f'''select * from {_DB_NAME} order by {_DB_SCORE} desc'''))
