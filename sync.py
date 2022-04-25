@@ -17,8 +17,7 @@ class Player:
     coords: Tuple[int, int] # x y
     goldAmount: int #TODO: rename to score
 
-    def __init__(
-        S,
+    def __init__(S,
         name: str,
         script: str,
         level: int

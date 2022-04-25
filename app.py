@@ -70,15 +70,15 @@ def getGoldAmount(sid: str, lvl: str) -> Response:
 
 
 @app.route('/db', methods=['GET', 'POST'])
-def db() -> Response:
+def dbOperations() -> Response:
     jsn = rq.json
 
     def onInsert():
-        db.insert(sk.getPlayer(int(jsn['pid'])))
+        db._insert(sk.getPlayer(int(jsn['pid'])))
         return Response(status=200)
 
     return {
-        'select': lambda: jsonify(db.select()),
+        'select': lambda: jsonify(db._select()),
         'insert': onInsert
     }[jsn['mode']]()
 
