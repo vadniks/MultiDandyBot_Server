@@ -1,9 +1,12 @@
 import sqlite3 as sq
+import threading
 from pathlib import Path
 from typing import Callable, Any
 from executor import TaskExecutor
 from sync import Player
 import atexit as ax
+import sys
+from threading import get_ident
 
 _DIR_PATH = Path().resolve().absolute().__str__()
 _DB_NAME = 'players' # and table name too
@@ -15,6 +18,7 @@ _DB_SCRIPT = 'script'
 _DB_DATE = 'date'
 
 _executor: TaskExecutor
+_connection: sq.Connection
 
 
 def _wrapper(wrapped: Callable, doPost: Callable = None) -> Any:
@@ -54,24 +58,36 @@ def _select() -> Any: return _wrapper(lambda cursor:
 
 
 def _init():
+    global _connection, _executor
+
+    sys.stderr.write('init ' + str(get_ident()) + '\n')
+
+    def atExit():
+        _connection.close()
+        _executor.join()
+    ax.register(lambda: _executor.doPost(False, lambda _: atExit(), None))  # TODO: make client's quit request sending in this way
+
     _connection = sq.connect(_DB_FILE)
-    ax.register(lambda: _connection.close())  # TODO: make client's quit request sending in this way
     _initializeTable()
 
 
 def _wrapper2(arg: Any | None, fun: Callable):
+    sys.stderr.write('wrapper2 ' + str(get_ident()) + '\n')
     _id = _executor.doPost(True, lambda a: fun(a) if a is not None else fun(), arg)
-    while (result := _executor.checkTask(_id)) is None: pass
+    while (result := _executor.checkTask(_id)) is None: pass #sys.stderr.write(str(type(result)) + '\n')
     return result
 
 
 def insert(player: Player): _wrapper2(player, _insert)
 
 
-def select(): return _wrapper2(None, select)
+def select():
+    sys.stderr.write('select ' + str(get_ident()) + '\n')
+    return _wrapper2(None, _select)
 
 
+sys.stderr.write('module ' + str(get_ident()) + '\n')
 _executor = TaskExecutor()
 _executor.daemon = True
 _executor.start()
-_executor.doPost(True, _init, None)
+_executor.doPost(True, lambda _: _init(), None)

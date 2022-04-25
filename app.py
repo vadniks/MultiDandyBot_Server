@@ -74,11 +74,11 @@ def dbOperations() -> Response:
     jsn = rq.json
 
     def onInsert():
-        db._insert(sk.getPlayer(int(jsn['pid'])))
+        db.insert(sk.getPlayer(int(jsn['pid'])))
         return Response(status=200)
 
     return {
-        'select': lambda: jsonify(db._select()),
+        'select': lambda: jsonify(db.select()),
         'insert': onInsert
     }[jsn['mode']]()
 

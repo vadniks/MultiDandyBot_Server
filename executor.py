@@ -1,10 +1,10 @@
 import time
-from threading import Thread
+from threading import Thread, get_ident
 from queue import SimpleQueue
 from typing import Callable, Optional, Tuple, List, Any
 from overrides import overrides
-
 from sync import NUM_UNDEF
+import sys
 
 
 class TaskExecutor(Thread): #  id    task  argument
@@ -16,12 +16,13 @@ class TaskExecutor(Thread): #  id    task  argument
         super().__init__()
         S._queue = SimpleQueue()
         S._canRun = True
+        S._tasks = []
 
     def doPost(S,
         gonnaWaitForResult: bool,
         task: Callable,
         arg: Any | None
-   ) -> int:
+    ) -> int:
         if gonnaWaitForResult:
             _id: int = round(time.time() * 1000)
             S._tasks.append((_id, False, None))
@@ -42,7 +43,10 @@ class TaskExecutor(Thread): #  id    task  argument
                 _id, task, arg = S._queue.get()
 
                 if (index := S._getTask(_id)) >= 0:
+                    sys.stderr.write(str(S._tasks[index]) + ' ' + str(get_ident()) + '   \n')
                     S._tasks[index] = (_id, True, task(arg))
+                    sys.stderr.write('|' + str(S._tasks[index]) + '|\n')
+            time.sleep(0.1)
 
     def checkTask(S, _id: int) -> Any:
         if not (task := S._tasks[S._getTask(_id)])[1]:
