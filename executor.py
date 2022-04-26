@@ -6,8 +6,8 @@ from sync import NUM_UNDEF, THRESHOLD
 from time import time, sleep
 
 
-class TaskExecutor(Thread): #  id    task  argument
-    _queue: SimpleQueue[Tuple[int, Callable, Any]]
+class TaskExecutor(Thread): #  id    task     argument
+    _queue: SimpleQueue[Tuple[int, Callable, Any | None]]
     _canRun: bool #    id status result
     _tasks: List[Tuple[int, bool, Any]]
 
