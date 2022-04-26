@@ -18,6 +18,7 @@ _DB_DATE = 'date'
 
 _executor: TaskExecutor
 _connection: sq.Connection
+_canWait = True
 
 
 def _wrapper(wrapped: Callable, doPost: Callable = None) -> Any:
@@ -65,9 +66,10 @@ def _checkName(name: str) -> Row: return _wrapper(lambda cursor:
 
 
 def _init():
-    global _connection, _executor
+    global _connection, _executor, _canWait
 
     def atExit():
+        _canWait = False
         _connection.close()
         _executor.join()
     ax.register(lambda: _executor.doPost(False, lambda _: atExit(), None))  # TODO: make client's quit request sending in this way
@@ -76,13 +78,18 @@ def _init():
     _initializeTable()
 
 
-def _wrapper2(arg: Any | None, fun: Callable):
+def _wrapper2(arg: Any | None, fun: Callable) -> Any:
+    global _canWait
     _id = _executor.doPost(True, lambda a: fun(a) if a is not None else fun(), arg)
-    while (result := _executor.checkTask(_id)) is None: sleep(THRESHOLD)
+    while (result := _executor.checkTask(_id)) is None and _canWait: sleep(THRESHOLD)
     return result
 
 
-def insert(player: Player): _wrapper2(player, _insert)
+def insert(player: Player):
+    global _executor
+    _executor.doPost(False, _insert, player)
+
+
 def select() -> List[Row]: return _wrapper2(None, _select)
 
 
@@ -92,4 +99,4 @@ def checkName(name: str) -> bool: return _wrapper2(name,
 
 _executor = TaskExecutor()
 _executor.start()
-_executor.doPost(True, lambda _: _init(), None)
+_executor.doPost(False, lambda _: _init(), None)

@@ -43,6 +43,7 @@ class TaskExecutor(Thread): #  id    task     argument
 
                 if (index := S._getTask(_id)) >= 0:
                     S._tasks[index] = (_id, True, task(arg))
+                else: task(arg)
             sleep(THRESHOLD)
 
     def checkTask(S, _id: int) -> Any:
