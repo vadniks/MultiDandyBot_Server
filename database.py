@@ -21,12 +21,11 @@ _connection: sq.Connection
 _canWait = True
 
 
-def _wrapper(wrapped: Callable, doPost: Callable = None) -> Any:
+def _wrapper(wrapped: Callable) -> Any:
     cursor = _connection.cursor()
     a = wrapped(cursor)
     _connection.commit()
     cursor.close()
-    if doPost is not None: doPost(a)
     return a
 
 
