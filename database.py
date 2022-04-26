@@ -9,7 +9,7 @@ import atexit as ax
 
 _DIR_PATH = Path().resolve().absolute().__str__()
 _DB_NAME = 'players' # and table name too
-_DB_FILE = _DIR_PATH + _DB_NAME + '.db'
+_DB_FILE = _DIR_PATH + '/' + _DB_NAME + '.db'
 _DB_ID = 'id'
 _DB_PLAYER = 'player'
 _DB_SCORE = 'score'
@@ -29,7 +29,6 @@ def _wrapper(wrapped: Callable, doPost: Callable = None) -> Any:
     return a
 
 
-# noinspection SqlNoDataSourceInspection
 def _initializeTable(): _wrapper(lambda cursor:
     cursor.execute(f'''create table if not exists {_DB_NAME} (
         {_DB_ID} integer primary key, /*implicit autoincrement, pass null when inserting*/
@@ -40,8 +39,6 @@ def _initializeTable(): _wrapper(lambda cursor:
     )'''))
 
 
-# TODO: test & debug
-# noinspection SqlNoDataSourceInspection
 def _insert(player: Player): _wrapper(lambda cursor:
     cursor.execute(f'''insert into {_DB_NAME} (
         {_DB_PLAYER},
@@ -55,9 +52,16 @@ def _insert(player: Player): _wrapper(lambda cursor:
         player.created)))
 
 
-# noinspection SqlNoDataSourceInspection
 def _select() -> List[Row]: return _wrapper(lambda cursor:
-    cursor.execute(f'''select * from {_DB_NAME} order by {_DB_SCORE} desc''').fetchall())
+    cursor.execute(f'''select 
+        {_DB_PLAYER}, 
+        {_DB_SCORE}
+    from {_DB_NAME} order by {_DB_SCORE} desc''').fetchall())
+
+
+def _checkName(name: str) -> Row: return _wrapper(lambda cursor:
+    cursor.execute(f'select {_DB_ID} from {_DB_NAME} where {_DB_PLAYER} = ? limit 1',
+        (name,)).fetchone())
 
 
 def _init():
@@ -79,9 +83,11 @@ def _wrapper2(arg: Any | None, fun: Callable):
 
 
 def insert(player: Player): _wrapper2(player, _insert)
-
-
 def select() -> List[Row]: return _wrapper2(None, _select)
+
+
+def checkName(name: str) -> bool: return _wrapper2(name,
+    lambda _name: _checkName(_name) is not None)
 
 
 _executor = TaskExecutor()
