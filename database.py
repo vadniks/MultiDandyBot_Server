@@ -43,8 +43,16 @@ def _initializeTable(): _wrapper(lambda cursor:
 # TODO: test & debug
 # noinspection SqlNoDataSourceInspection
 def _insert(player: Player): _wrapper(lambda cursor:
-    cursor.executemany(f'''insert into {_DB_NAME} values (?, ?, ?, ?, ?)''',
-        None, player.name, player.goldAmount, player.script, player.created))
+    cursor.execute(f'''insert into {_DB_NAME} (
+        {_DB_PLAYER},
+        {_DB_SCORE},
+        {_DB_SCRIPT},
+        {_DB_DATE}
+    ) values (?, ?, ?, ?)''', (
+        player.name,
+        player.goldAmount,
+        player.script,
+        player.created)))
 
 
 # noinspection SqlNoDataSourceInspection
@@ -77,6 +85,5 @@ def select() -> List[Row]: return _wrapper2(None, _select)
 
 
 _executor = TaskExecutor()
-_executor.daemon = True
 _executor.start()
 _executor.doPost(True, lambda _: _init(), None)
