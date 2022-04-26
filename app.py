@@ -83,5 +83,11 @@ def dbOperations() -> Response:
     }[jsn['mode']]()
 
 
+@app.route('/rd/<pid>', methods=['POST'])
+def ready(pid: str) -> Response:
+    sk.markReady(int(pid))
+    return Response(status=200)
+
+
 if __name__ == '__main__':
     app.run()

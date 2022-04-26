@@ -17,6 +17,7 @@ class Player:
     level: int
     coords: Tuple[int, int] # x y
     goldAmount: int #TODO: rename to score
+    isReady: bool
 
     def __init__(S,
         name: str,
@@ -30,6 +31,7 @@ class Player:
         S.created = round(time.time() * 1000)
         S.level = level
         S.goldAmount = 0
+        S.isReady = False
 
 
 class Board:
@@ -119,12 +121,12 @@ def getPlayer(pid: int) -> Player | None:
     return None
 
 
-def getPlayers(pidToExclude: int) -> List[Tuple[int, str]]:
+def getPlayers(pidToExclude: int) -> List[Tuple[int, str, bool]]:
     global _players
     _list = []
     for i in _players:
         if i.id != pidToExclude:
-            _list.append((i.id, i.name))
+            _list.append((i.id, i.name, i.isReady))
     return _list
 
 
@@ -205,3 +207,11 @@ def checkName(name: str) -> bool:
         if i.name == name:
             return True
     return False
+
+
+def markReady(pid: int):
+    for i in _players:
+        if i.id == pid:
+            i.isReady = True
+            return
+    raise Exception()
