@@ -10,7 +10,7 @@ app = Flask(__name__)
 
 @app.route('/')
 def index():
-    return "<h1>There's no easter eggs up here, go away.</h1>"
+    return "<h1>There are no easter eggs up here, go away.</h1>"
 
 
 @app.route('/new', methods=['POST'])
