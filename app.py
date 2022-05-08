@@ -88,7 +88,7 @@ def traceBoard(sid: str, pid: str, lvl: str) -> Response:
 
 
 @app.route('/gld/<sid>/<lvl>', methods=['GET'])
-def getGoldAmount(sid: str, lvl: str) -> Response:
+def getGoldAmount(sid: str, lvl: str) -> str | Response:
     a = sk.getGoldAmount(int(sid), int(lvl))
     return str(a) if a >= 0 else Response(status=500)
 
@@ -113,6 +113,12 @@ def ready(pid: str) -> Response:
     return Response(status=200)
 
 
+@app.route('/hpl/<pid>/<sid>', methods=['GET'])
+def hasPlayerLeft(pid: str, sid: str) -> str:
+    return str(sk.hasPlayerLeft(int(pid), int(sid)))
+
+
+# TODO: to gracefully shutdown the server send a post request to the
 # TODO: shutdown endpoint "curl -X POST http://127.0.0.1:5000/end"
 # TODO: and then send the SIGTERM signal or Ctrl+C (SIGINT)
 @app.route('/end', methods=['POST'])

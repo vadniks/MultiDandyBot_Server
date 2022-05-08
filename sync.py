@@ -167,6 +167,11 @@ def removePlayer(pid: int) -> bool:
     global _players
     for j, i in enumerate(_players):
         if i.id == pid:
+            playersInSession = i.session.players
+            for l, k in enumerate(playersInSession):
+                if k.id == pid:
+                    playersInSession.pop(l)
+
             _players.pop(j)
             delSessionIfNeeded(i.session.id)
             return True
@@ -239,3 +244,11 @@ def markReady(pid: int):
             i.isReady = True
             return
     raise Exception()
+
+
+def hasPlayerLeft(pid: int, sid: int) -> bool:
+    session = _getSession(sid)
+    for i in session.players:
+        if i.id == pid:
+            return False
+    return True
