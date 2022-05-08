@@ -13,7 +13,7 @@ def index():
     return "<h1>There are no easter eggs up here, go away.</h1>"
 
 
-@app.route('/new', methods=['POST'])
+@app.route('/new', methods=['POST']) # TODO: define request methods in constants
 def newPlayer() -> Response:
     a = rq.json
 
@@ -47,7 +47,7 @@ def trace(sid: str, pid: str) -> Response:
 def updateLvl(pid: str) -> Response:
     a = rq.json
     sk.updatePlayer(int(pid), int(a['level']), int(a['x']), int(a['y']), int(a['gold']))
-    return Response(status=200)
+    return Response(status=200) # TODO: define arguments names in constants
 
 
 @app.route('/brd/<sid>/<lvl>', methods=['POST'])
@@ -86,6 +86,14 @@ def dbOperations() -> Response:
 @app.route('/rd/<pid>', methods=['POST'])
 def ready(pid: str) -> Response:
     sk.markReady(int(pid))
+    return Response(status=200)
+
+
+# TODO: shutdown endpoint "curl -X POST http://127.0.0.1:5000/end"
+# TODO: and then send the SIGTERM signal or Ctrl+C (SIGINT)
+@app.route('/end', methods=['POST'])
+def end() -> Response:
+    db.end()
     return Response(status=200)
 
 

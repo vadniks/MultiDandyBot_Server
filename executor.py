@@ -1,6 +1,6 @@
 from threading import Thread
 from queue import SimpleQueue
-from typing import Callable, Optional, Tuple, List, Any
+from typing import Callable, Tuple, List, Any
 from overrides import overrides
 from sync import NUM_UNDEF, THRESHOLD
 from time import time, sleep
@@ -52,6 +52,5 @@ class TaskExecutor(Thread): #  id    task     argument
         S._tasks.remove(task)
         return task[2]
 
-    @overrides
-    def join(S, timeout: Optional[float] = ...) -> None:
+    def end(S):
         S._canRun = False

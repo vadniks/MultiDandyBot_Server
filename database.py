@@ -1,11 +1,11 @@
 import sqlite3 as sq
+import sys
 from pathlib import Path
 from sqlite3 import Row
 from time import sleep
 from typing import Callable, Any, List
 from executor import TaskExecutor
 from sync import Player, THRESHOLD
-import atexit as ax
 
 _DIR_PATH = Path().resolve().absolute().__str__()
 _DB_NAME = 'players' # and table name too
@@ -65,14 +65,7 @@ def _checkName(name: str) -> Row: return _wrapper(lambda cursor:
 
 
 def _init():
-    global _connection, _executor, _canWait
-
-    def atExit():
-        _canWait = False
-        _connection.close()
-        _executor.join()
-    ax.register(lambda: _executor.doPost(False, lambda _: atExit(), None))  # TODO: make client's quit request sending in this way
-
+    global _connection
     _connection = sq.connect(_DB_FILE)
     _initializeTable()
 
@@ -94,6 +87,18 @@ def select() -> List[Row]: return _wrapper2(None, _select)
 
 def checkName(name: str) -> bool: return _wrapper2(name,
     lambda _name: _checkName(_name) is not None)
+
+
+def end():
+    global _executor
+
+    def a(_):
+        global _connection, _executor, _canWait
+        _connection.close()
+        _executor.end()
+        _canWait = False
+        exit(0)
+    _executor.doPost(False, a, None)
 
 
 _executor = TaskExecutor()
